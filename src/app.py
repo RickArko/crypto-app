@@ -17,6 +17,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+
 def get_token_df_from_user_search(text_input):
     """
     returns: DataFrame
@@ -32,16 +33,26 @@ def get_token_df_from_user_search(text_input):
     df_token = DF_TOKENS[DF_TOKENS['name'].str.lower() == input]
     return df_token
 
+
 def summarise_coin_info(resp):
-
+    """Format streamlit high level coin summary from result dict.
+    """
     repo = resp.get('links').get('repos_url').get("github")
-    st.write(f'GitHub: {repo[0]}')
-
     price_delta24hour = resp.get("market_data").get("price_change_24h_in_currency").get("usd")
     sentiment = resp.get("sentiment_votes_up_percentage")
 
-    st.write(f'24 Hour Price Change: {price_delta24hour} \nSetiment: {sentiment}')
-
+    if price_delta24hour:
+        if price_delta24hour > 0:
+            msg = f'up ${price_delta24hour:,.2f}'
+        elif price_delta24hour < 0:
+            msg = f'down ${price_delta24hour:,.2f}'
+        st.write('In the last 24 hours price is ' + msg)
+ 
+    if sentiment:
+        st.write(f'Sentiment: {sentiment}')
+    
+    if repo:
+        st.write(f'See GitHub: {repo[0]}')
 
 if __name__ == '__main__':
 
@@ -53,11 +64,11 @@ if __name__ == '__main__':
 
     TITLE = f'Retrieving CoinGecko Price Data for {DF_TOKEN["name"].iloc[0]}'
     ID = DF_TOKEN['id'].iloc[0]
-    
+
     COIN_INFO_DICT = get_coin_info_dict_by_id(ID)
 
     if st.checkbox('Show Everything from Coingecko:'):
-        st.write(resp)
+        st.write(COIN_INFO_DICT)
 
     st.header(TITLE)
 
