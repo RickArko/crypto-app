@@ -2,3 +2,6 @@ streamlit
 pandas
 pycoingecko
 plotly
+statsmodels
+fbprophet
+scikit-learn
