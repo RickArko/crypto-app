@@ -52,4 +52,15 @@ def get_coin_info_dict_by_id(coingeckoid):
     """
     resp = cg.get_coin_by_id(coingeckoid)
     return resp
-    
+
+
+def get_cg_daily_ohlc(coingeckoid):
+    """
+    returns: DataFrame (index: datetime, open, high, low, close)
+    """
+    resp = cg.get_coin_ohlc_by_id(id=coingeckoid, vs_currency='usd', days='max')
+
+    df = pd.DataFrame(resp, columns=['time', 'open', 'high', 'low', 'close'])
+    df['datetime'] = pd.to_datetime(df['time'], unit='ms')
+    df = df.set_index('datetime')
+    return df
